@@ -1,10 +1,11 @@
-package com.tycz.mlcamera
+package com.tycz.mlcamera.barcode.graphics
 
 import android.graphics.Canvas
 import android.graphics.Path
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.tycz.mlcamera.GraphicOverlay
 
-internal class BarcodeConfirmingGraphic(private val overlay: com.tycz.mlcamera.GraphicOverlay, private val barcode: FirebaseVisionBarcode) :
+internal class BarcodeConfirmingGraphic(private val overlay: GraphicOverlay, private val barcode: FirebaseVisionBarcode) :
     BarcodeGraphicBase(overlay) {
 
     override fun draw(canvas: Canvas) {

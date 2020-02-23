@@ -1,10 +1,11 @@
-package com.tycz.mlcamera
+package com.tycz.mlcamera.barcode.graphics
 
 import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Path
 import android.graphics.Point
 import android.graphics.PointF
+import com.tycz.mlcamera.GraphicOverlay
 
 /** Draws the graphic to indicate the barcode result is in loading.  */
 internal class BarcodeLoadingGraphic(overlay: GraphicOverlay, private val loadingAnimator: ValueAnimator) :

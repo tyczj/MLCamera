@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.google.android.gms.vision.barcode.Barcode
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
@@ -12,8 +13,9 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOption
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.tycz.mlcamera.*
-import com.tycz.mlcamera.BarcodeLoadingGraphic
-import com.tycz.mlcamera.BarcodeReticleGraphic
+import com.tycz.mlcamera.barcode.graphics.BarcodeLoadingGraphic
+import com.tycz.mlcamera.barcode.graphics.BarcodeReticleGraphic
+import com.tycz.mlcamera.barcode.BarcodeResultListener
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -27,13 +29,18 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
     private val _cameraReticleAnimator: CameraReticleAnimator =
         CameraReticleAnimator(graphicOverlay)
     private lateinit var _detector: FirebaseVisionBarcodeDetector
-    private var _isRunning:AtomicBoolean = AtomicBoolean(false)
+    private val _isRunning:AtomicBoolean = AtomicBoolean(false)
     private lateinit var _barcodeReticile: BarcodeReticleGraphic
 
     /**
      * Callback for when a barcode is found, the full FirebaseVisionBarcode object is returned
      */
     var barcodeResultListener: BarcodeResultListener? = null
+
+    /**
+     * Flag for showing an animation when a barcode is found that simulates loading/scanning.
+     * Default value is true
+     */
     var shouldShowLoadingAnimation: Boolean = true
 
     init {
@@ -84,10 +91,11 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
 
                 if(barcodes.size == 0){
                     _cameraReticleAnimator.start()
-                    _barcodeReticile = BarcodeReticleGraphic(
-                        graphicOverlay,
-                        _cameraReticleAnimator
-                    )
+                    _barcodeReticile =
+                        BarcodeReticleGraphic(
+                            graphicOverlay,
+                            _cameraReticleAnimator
+                        )
                     graphicOverlay.add(_barcodeReticile)
                 }else{
                     _isRunning.set(true)
@@ -135,10 +143,11 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
                 if ((animatedValue as Float).compareTo(endProgress) >= 0) {
                     graphicOverlay.clear()
                     barcodeResultListener?.onBarcodeFound(barcode)
-                    _barcodeReticile = BarcodeReticleGraphic(
-                        graphicOverlay,
-                        _cameraReticleAnimator
-                    )
+                    _barcodeReticile =
+                        BarcodeReticleGraphic(
+                            graphicOverlay,
+                            _cameraReticleAnimator
+                        )
                     graphicOverlay.add(_barcodeReticile)
                     _isRunning.set(false)
                     graphicOverlay.invalidate()

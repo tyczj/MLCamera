@@ -1,18 +1,24 @@
-package com.tycz.mlcamera
+package com.tycz.mlcamera.barcode.graphics
 
 import android.graphics.*
 import androidx.core.content.ContextCompat
+import com.tycz.mlcamera.GraphicOverlay
+import com.tycz.mlcamera.R
 
 internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : GraphicOverlay.Graphic(overlay) {
 
     private val boxPaint: Paint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.barcode_reticle_stroke)
+        color = ContextCompat.getColor(context,
+            R.color.barcode_reticle_stroke
+        )
         style = Paint.Style.STROKE
         strokeWidth = context.resources.getDimensionPixelOffset(R.dimen.barcode_reticle_stroke_width).toFloat()
     }
 
     private val scrimPaint: Paint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.barcode_reticle_background)
+        color = ContextCompat.getColor(context,
+            R.color.barcode_reticle_background
+        )
     }
 
     private val eraserPaint: Paint = Paint().apply {

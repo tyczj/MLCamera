@@ -1,11 +1,14 @@
-package com.tycz.mlcamera
+package com.tycz.mlcamera.barcode.graphics
 
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import androidx.core.content.ContextCompat
+import com.tycz.mlcamera.CameraReticleAnimator
+import com.tycz.mlcamera.GraphicOverlay
+import com.tycz.mlcamera.R
 
-internal class BarcodeReticleGraphic(overlay: com.tycz.mlcamera.GraphicOverlay, private val animator: com.tycz.mlcamera.CameraReticleAnimator) :
+internal class BarcodeReticleGraphic(overlay: GraphicOverlay, private val animator: CameraReticleAnimator) :
     BarcodeGraphicBase(overlay) {
 
     private val ripplePaint: Paint
@@ -17,7 +20,9 @@ internal class BarcodeReticleGraphic(overlay: com.tycz.mlcamera.GraphicOverlay, 
         val resources = overlay.resources
         ripplePaint = Paint()
         ripplePaint.style = Paint.Style.STROKE
-        ripplePaint.color = ContextCompat.getColor(context, R.color.reticle_ripple)
+        ripplePaint.color = ContextCompat.getColor(context,
+            R.color.reticle_ripple
+        )
         rippleSizeOffset = resources.getDimensionPixelOffset(R.dimen.barcode_reticle_ripple_size_offset)
         rippleStrokeWidth = resources.getDimensionPixelOffset(R.dimen.barcode_reticle_ripple_stroke_width)
         rippleAlpha = ripplePaint.alpha
