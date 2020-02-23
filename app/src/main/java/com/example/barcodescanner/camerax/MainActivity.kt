@@ -5,6 +5,11 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import androidx.lifecycle.LifecycleOwner
+import com.tycz.mlcamera.BarcodeResultListener
+import com.tycz.mlcamera.MLCamera
+import com.tycz.mlcamera.analyzers.MaterialBarcodeAnalyzer
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import androidx.camera.view.PreviewView
 
 class MainActivity : AppCompatActivity(),
     BarcodeResultListener {
@@ -13,13 +18,15 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val previewView: PreviewView? = null
+
         overlay.setCameraInfo(preview_view)
 
-        val analyzer = com.tycz.mlcamera.BarcodeAnalyzer(overlay).apply {
+        val analyzer = MaterialBarcodeAnalyzer(overlay).apply {
             this.barcodeResultListener = this@MainActivity
         }
 
-        val mlCamera: com.tycz.mlcamera.MLCamera = com.tycz.mlcamera.MLCamera.Builder(this)
+        val mlCamera: MLCamera = MLCamera.Builder(this)
             .setLifecycleOwner(this as LifecycleOwner)
             .setImageAnalyzer(analyzer)
             .build()
