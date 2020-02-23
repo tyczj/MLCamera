@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.google.android.gms.vision.barcode.Barcode
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
@@ -13,9 +12,9 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOption
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.tycz.mlcamera.*
+import com.tycz.mlcamera.barcode.BarcodeListener
 import com.tycz.mlcamera.barcode.graphics.BarcodeLoadingGraphic
 import com.tycz.mlcamera.barcode.graphics.BarcodeReticleGraphic
-import com.tycz.mlcamera.barcode.BarcodeResultListener
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -35,7 +34,7 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
     /**
      * Callback for when a barcode is found, the full FirebaseVisionBarcode object is returned
      */
-    var barcodeResultListener: BarcodeResultListener? = null
+    var barcodeResultListener: BarcodeListener? = null
 
     /**
      * Flag for showing an animation when a barcode is found that simulates loading/scanning.
@@ -91,32 +90,21 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
 
                 if(barcodes.size == 0){
                     _cameraReticleAnimator.start()
-                    _barcodeReticile =
-                        BarcodeReticleGraphic(
-                            graphicOverlay,
-                            _cameraReticleAnimator
-                        )
+                    _barcodeReticile = BarcodeReticleGraphic(graphicOverlay, _cameraReticleAnimator)
                     graphicOverlay.add(_barcodeReticile)
                 }else{
                     _isRunning.set(true)
                     _cameraReticleAnimator.cancel()
 
+                    barcodeResultListener?.onBarcodeProcessing()
+
                     if(shouldShowLoadingAnimation){
                         val loadingAnimator = createLoadingAnimator(graphicOverlay, barcodes.first())
                         loadingAnimator.start()
-                        graphicOverlay.add(
-                            BarcodeLoadingGraphic(
-                                graphicOverlay,
-                                loadingAnimator
-                            )
-                        )
+                        graphicOverlay.add(BarcodeLoadingGraphic(graphicOverlay, loadingAnimator))
                     }else{
-                        barcodeResultListener?.onBarcodeFound(barcodes.first())
-                        _barcodeReticile =
-                            BarcodeReticleGraphic(
-                                graphicOverlay,
-                                _cameraReticleAnimator
-                            )
+                        barcodeResultListener?.onBarcodeProcessed(barcodes.first())
+                        _barcodeReticile = BarcodeReticleGraphic(graphicOverlay, _cameraReticleAnimator)
                         graphicOverlay.add(_barcodeReticile)
                         _isRunning.set(false)
                     }
@@ -139,18 +127,10 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
         return ValueAnimator.ofFloat(0f, endProgress).apply {
             duration = 2000
             addUpdateListener {
-                val compare = (animatedValue as Float).compareTo(endProgress)
                 if ((animatedValue as Float).compareTo(endProgress) >= 0) {
                     graphicOverlay.clear()
-                    barcodeResultListener?.onBarcodeFound(barcode)
-                    _barcodeReticile =
-                        BarcodeReticleGraphic(
-                            graphicOverlay,
-                            _cameraReticleAnimator
-                        )
-                    graphicOverlay.add(_barcodeReticile)
+                    barcodeResultListener?.onBarcodeProcessed(barcode)
                     _isRunning.set(false)
-                    graphicOverlay.invalidate()
                 } else {
                     graphicOverlay.invalidate()
                 }

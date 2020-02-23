@@ -4,7 +4,7 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 
-class CameraReticleAnimator(graphicOverlay: com.tycz.mlcamera.GraphicOverlay) {
+internal class CameraReticleAnimator(graphicOverlay: GraphicOverlay) {
 
     /** Returns the scale value of ripple alpha ranges in [0, 1].  */
     var rippleAlphaScale = 0f
