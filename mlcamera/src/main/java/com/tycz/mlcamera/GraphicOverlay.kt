@@ -3,6 +3,8 @@ package com.tycz.mlcamera
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Canvas
+import android.graphics.Rect
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import androidx.camera.view.PreviewView
@@ -42,6 +44,20 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
             previewHeight = previewView.height
         }
     }
+
+    /**
+     * Adjusts the `rect`'s coordinate from the preview's coordinate system to the view
+     * coordinate system.
+     */
+    fun translateRect(rect: Rect) = RectF(
+        translateX(rect.left.toFloat()),
+        translateY(rect.top.toFloat()),
+        translateX(rect.right.toFloat()),
+        translateY(rect.bottom.toFloat())
+    )
+
+    fun translateX(x: Float): Float = x * widthScaleFactor
+    fun translateY(y: Float): Float = y * heightScaleFactor
 
     /** Removes all graphics from the overlay.  */
     fun clear() {

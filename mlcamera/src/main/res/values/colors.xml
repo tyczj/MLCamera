@@ -6,4 +6,10 @@
     <color name="barcode_field_box_stroke">#757575</color>
     <color name="reticle_ripple">#9AFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="object_reticle_outer_ring_fill">#1F000000</color>
+    <color name="object_reticle_outer_ring_stroke">#9AFFFFFF</color>
+    <color name="object_reticle_inner_ring">@color/white</color>
+    <color name="bounding_box_gradient_start">#00FFFFFF</color>
+    <color name="bounding_box_gradient_end">@color/white</color>
 </resources>

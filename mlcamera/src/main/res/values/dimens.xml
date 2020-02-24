@@ -4,4 +4,18 @@
     <dimen name="barcode_reticle_ripple_size_offset">40dp</dimen>
     <dimen name="barcode_reticle_stroke_width">4dp</dimen>
     <dimen name="barcode_reticle_corner_radius">8dp</dimen>
+    <dimen name="object_reticle_ripple_stroke_width">4dp</dimen>
+    <dimen name="object_reticle_ripple_size_offset">24dp</dimen>
+    <dimen name="object_reticle_outer_ring_fill_radius">22dp</dimen>
+    <dimen name="object_reticle_outer_ring_stroke_radius">24dp</dimen>
+    <dimen name="object_reticle_outer_ring_stroke_width">4dp</dimen>
+    <dimen name="object_reticle_inner_ring_stroke_radius">14dp</dimen>
+    <dimen name="object_reticle_inner_ring_stroke_width">2dp</dimen>
+    <dimen name="object_dot_radius">@dimen/object_reticle_inner_ring_stroke_radius</dimen>
+    <dimen name="object_selection_distance_threshold">24dp</dimen>
+    <color name="object_confirmed_bg_gradient_start">#40000000</color>
+    <color name="object_confirmed_bg_gradient_end">#A0000000</color>
+    <dimen name="bounding_box_corner_radius">12dp</dimen>
+    <dimen name="bounding_box_stroke_width">1dp</dimen>
+    <dimen name="bounding_box_confirmed_stroke_width">2dp</dimen>
 </resources>
