@@ -1,10 +1,12 @@
-package com.tycz.mlcamera.`object`
+package com.tycz.mlcamera.`object`.graphics
 
 import android.graphics.*
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.tycz.mlcamera.GraphicOverlay
 import com.tycz.mlcamera.R
+import com.tycz.mlcamera.`object`.DetectedObject
+import com.tycz.mlcamera.`object`.ObjectConfirmationController
 
 /**
  * Draws the detected detectedObject info over the camera preview for multiple objects detection mode.

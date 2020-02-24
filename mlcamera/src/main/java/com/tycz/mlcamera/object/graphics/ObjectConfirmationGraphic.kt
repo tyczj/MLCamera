@@ -1,4 +1,4 @@
-package com.tycz.mlcamera.`object`
+package com.tycz.mlcamera.`object`.graphics
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -6,6 +6,7 @@ import android.graphics.RectF
 import androidx.core.content.ContextCompat
 import com.tycz.mlcamera.GraphicOverlay
 import com.tycz.mlcamera.R
+import com.tycz.mlcamera.`object`.ObjectConfirmationController
 
 /**
  * Similar to the camera reticle but with additional progress ring to indicate an object is getting

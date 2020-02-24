@@ -1,4 +1,4 @@
-package com.tycz.mlcamera.`object`
+package com.tycz.mlcamera.`object`.graphics
 
 import android.graphics.Canvas
 import android.graphics.Paint

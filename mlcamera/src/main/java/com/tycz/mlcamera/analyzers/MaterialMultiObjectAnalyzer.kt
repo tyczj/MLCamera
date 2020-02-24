@@ -19,7 +19,10 @@ import com.tycz.mlcamera.R
 import com.tycz.mlcamera.`object`.*
 import com.tycz.mlcamera.`object`.ObjectConfirmationController
 import com.tycz.mlcamera.`object`.ObjectDotAnimator
-import com.tycz.mlcamera.`object`.ObjectGraphicInMultiMode
+import com.tycz.mlcamera.`object`.graphics.ObjectGraphicInMultiMode
+import com.tycz.mlcamera.`object`.graphics.ObjectConfirmationGraphic
+import com.tycz.mlcamera.`object`.graphics.ObjectDotGraphic
+import com.tycz.mlcamera.`object`.graphics.ObjectReticleGraphic
 import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.hypot
@@ -34,13 +37,15 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
     private val _objectSelectionDistanceThreshold: Int = graphicOverlay.resources.getDimensionPixelOffset(R.dimen.object_selection_distance_threshold)
     private val _objectDotAnimatorArray = SparseArray<ObjectDotAnimator>()
 
+    var objectDetectionListener: ObjectDetectionListener? = null
+
     private lateinit var _detector: FirebaseVisionObjectDetector
 
     init {
         setupObjectScanning()
     }
 
-    fun setupObjectScanning(){
+    private fun setupObjectScanning(){
         val options = FirebaseVisionObjectDetectorOptions.Builder()
             .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
             .enableClassification()
@@ -77,6 +82,8 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
             _detector.processImage(firebaseImage).addOnSuccessListener {
                 _isRunning.set(true)
 
+                removeAnimatorsFromUntrackedObjects(it)
+
                 graphicOverlay.clear()
 
                 var selectedObject: DetectedObject? = null
@@ -87,10 +94,10 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
 
                     if(selectedObject == null && shouldSelectObject(graphicOverlay, detectedObject)){
                         selectedObject = DetectedObject(detectedObject, i, firebaseImage)
-
+                        objectDetectionListener?.objectProcessing()
                         _confirmationController.confirming(detectedObject.trackingId)
-                        graphicOverlay.add(ObjectConfirmationGraphic(graphicOverlay, _confirmationController, true))
-                        graphicOverlay.add(ObjectGraphicInMultiMode(graphicOverlay, selectedObject, _confirmationController))
+                        graphicOverlay.add(ObjectConfirmationGraphic(graphicOverlay,_confirmationController, true))
+                        graphicOverlay.add(ObjectGraphicInMultiMode(graphicOverlay,selectedObject,_confirmationController))
                     }else{
                         if (_confirmationController.isConfirmed) {
                             // Don't render other objects when an object is in confirmed state.
@@ -104,15 +111,16 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
                                 _objectDotAnimatorArray[trackingId] = this
                             }
                         }
-                        graphicOverlay.add(ObjectDotGraphic(graphicOverlay, DetectedObject(detectedObject, i, firebaseImage), objectDotAnimator))
+                        graphicOverlay.add(ObjectDotGraphic(graphicOverlay,DetectedObject(detectedObject, i, firebaseImage),objectDotAnimator))
                     }
                 }
 
                 if (selectedObject == null) {
                     _confirmationController.reset()
-                    graphicOverlay.add(ObjectReticleGraphic(graphicOverlay, _cameraReticleAnimator))
+                    graphicOverlay.add(ObjectReticleGraphic(graphicOverlay,_cameraReticleAnimator))
                     _cameraReticleAnimator.start()
                 } else {
+                    objectDetectionListener?.objectDetected(selectedObject)
                     _cameraReticleAnimator.cancel()
                 }
 

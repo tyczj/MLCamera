@@ -1,4 +1,4 @@
-package com.tycz.mlcamera.`object`
+package com.tycz.mlcamera.`object`.graphics
 
 import android.graphics.Canvas
 import android.graphics.Color
@@ -6,6 +6,8 @@ import android.graphics.Paint
 import android.graphics.PointF
 import com.tycz.mlcamera.GraphicOverlay
 import com.tycz.mlcamera.R
+import com.tycz.mlcamera.`object`.DetectedObject
+import com.tycz.mlcamera.`object`.ObjectDotAnimator
 
 /** A dot to indicate a detected object used by multiple objects detection mode.  */
 internal class ObjectDotGraphic(overlay: GraphicOverlay, detectedObject: DetectedObject, private val animator: ObjectDotAnimator)

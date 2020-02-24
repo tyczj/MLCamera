@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.tycz.mlcamera.MLCamera
 import com.tycz.mlcamera.analyzers.MaterialBarcodeAnalyzer
+import com.tycz.mlcamera.analyzers.MaterialMultiObjectAnalyzer
 import com.tycz.mlcamera.barcode.BarcodeListener
 
 class MainActivity : AppCompatActivity(), BarcodeListener {
@@ -22,9 +23,7 @@ class MainActivity : AppCompatActivity(), BarcodeListener {
 
         overlay.setCameraInfo(preview_view)
 
-        val analyzer = MaterialBarcodeAnalyzer(overlay).apply {
-            this.barcodeResultListener = this@MainActivity
-        }
+        val analyzer = MaterialMultiObjectAnalyzer(overlay)
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
             _mlCamera = MLCamera.Builder(this)
