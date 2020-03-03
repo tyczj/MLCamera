@@ -42,7 +42,7 @@ import kotlin.math.hypot
  * @param graphicOverlay The overlay that displays where objects were detected
  * @param trackMultipleObjects Flag for if the detector should detect multiple objects (up to 5) or just the most prominent object
  */
-class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private val trackMultipleObjects: Boolean): MLImageAnalyzer() {
+class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private val trackMultipleObjects: Boolean): ImageAnalysis.Analyzer {
 
     companion object{
         private const val TAG:String = "MaterialObjectAnalyzer"
