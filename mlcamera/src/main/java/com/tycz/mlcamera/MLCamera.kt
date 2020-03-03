@@ -36,21 +36,27 @@ class MLCamera private constructor(private val _context:Context,
 
     /**
      * Creates the camera preview and the image analyzer
+     *
+     * @param windowManager The Activities window manager
+     * @param previewView The camera preview view
      */
     fun setupCamera(windowManager: WindowManager, previewView: PreviewView){
 
         _cameraProvider = _cameraProviderFuture.get()
 
-        _preview = Preview.Builder()
-            .setTargetRotation(windowManager.defaultDisplay.rotation)
-            .build()
-
-        _preview.setSurfaceProvider(previewView.previewSurfaceProvider)
-
         _cameraSelector = CameraSelector.Builder()
             .requireLensFacing(_requiredCameraLens)
             .build()
 
+        startPreview(windowManager, previewView)
+
+        startScanning()
+    }
+
+    /**
+     * Starts the image analyzer if it has been stopped. Analyzer starts automatically when calling setupCamera
+     */
+    fun startScanning(){
         _imageAnalyzer = ImageAnalysis.Builder()
             .setTargetResolution(Size(_imageWidth, _imageHeight))
             .setBackpressureStrategy(_imageBackpressureStrategy)
@@ -58,15 +64,6 @@ class MLCamera private constructor(private val _context:Context,
 
         _imageAnalyzer.setAnalyzer(_imageExecutor,_analyzer)
 
-//        startScanning()
-
-        _cameraProvider.bindToLifecycle(_lifecycleOwner, _cameraSelector, _preview, _imageAnalyzer)
-    }
-
-    /**
-     * Starts the image analyzer if it has been stopped. Analyzer starts automatically when calling setupCamera
-     */
-    fun startScanning(){
         _cameraProvider.bindToLifecycle(_lifecycleOwner, _cameraSelector, _imageAnalyzer)
     }
 
@@ -87,7 +84,13 @@ class MLCamera private constructor(private val _context:Context,
     /**
      * Starts the camera preview after it has been stopped
      */
-    fun startPreview(){
+    fun startPreview(windowManager: WindowManager, previewView: PreviewView){
+        _preview = Preview.Builder()
+            .setTargetRotation(windowManager.defaultDisplay.rotation)
+            .build()
+
+        _preview.setSurfaceProvider(previewView.previewSurfaceProvider)
+
         _cameraProvider.bindToLifecycle(_lifecycleOwner, _cameraSelector, _preview)
     }
 
@@ -106,8 +109,8 @@ class MLCamera private constructor(private val _context:Context,
      */
     data class Builder(private val context: Context){
 
-        private val DEFAULT_IMAGE_HEIGHT:Int = 720
-        private val DEFAULT_IMAGE_WIDTH:Int = 1280
+        private val DEFAULT_IMAGE_HEIGHT:Int = 640
+        private val DEFAULT_IMAGE_WIDTH:Int = 480
 
         private var _imageHeight:Int = DEFAULT_IMAGE_HEIGHT
         private var _imageWidth:Int = DEFAULT_IMAGE_WIDTH
@@ -121,7 +124,10 @@ class MLCamera private constructor(private val _context:Context,
         /**
          * Optionally set the image capture dimensions of the analyzer.
          * This is the image that gets processed by the detector so the smaller the image the faster it will process
-         * The image Default is 1280x720
+         * The image Default is 640x480 for fast processing
+         *
+         * @param height Requested image height
+         * @param width Requested image width
          */
         fun setImageDimensions(height:Int, width:Int): Builder {
             _imageHeight = height
@@ -140,6 +146,8 @@ class MLCamera private constructor(private val _context:Context,
 
         /**
          * Sets the image analyzer that is used for
+         *
+         * @param analyzer Analyzer for processing frames from the camera
          */
         fun setImageAnalyzer(analyzer:ImageAnalysis.Analyzer, executor:Executor = ContextCompat.getMainExecutor(context)): Builder {
             _analyzer = analyzer

@@ -11,13 +11,16 @@ import java.io.IOException
 /**
  * Holds the detected object and its related image info.
  */
-class DetectedObject(private val visionObject: FirebaseVisionObject, val objectIndex: Int, private val image: FirebaseVisionImage) {
+class DetectedObject(private val visionObject: FirebaseVisionObject, val objectIndex: Int, private val image: FirebaseVisionImage, private val width:Int, private val height:Int) {
 
     private var bitmap: Bitmap? = null
     private var jpegBytes: ByteArray? = null
 
     val objectId: Int? = visionObject.trackingId
     val boundingBox: Rect = visionObject.boundingBox
+
+    val imageWidth:Int = width
+    val imageHeight:Int = height
 
     val imageData: ByteArray?
         @Synchronized get() {

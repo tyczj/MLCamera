@@ -20,6 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Image analyzer for finding a single barcode with material design styling
  * It detects all barcode formats
+ * @see <a href="https://material.io/collections/machine-learning/barcode-scanning.html">link</a>
+ *
+ * @param graphicOverlay The overlay that displays where objects were detected
  */
 class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageAnalysis.Analyzer {
 

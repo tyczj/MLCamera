@@ -6,18 +6,19 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Size
 import android.view.View
 import androidx.camera.view.PreviewView
+import kotlin.math.ceil
 
 class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private val lock = Any()
-
-    private var previewWidth: Int = 0
-    private var widthScaleFactor = 1.0f
-    private var previewHeight: Int = 0
-    private var heightScaleFactor = 1.0f
     private val graphics = ArrayList<Graphic>()
+    private var _imageWidth: Int = 0
+    private var _imageHeight: Int = 0
+    private var widthScaleFactor: Float = 0.0f
+    private var heightScaleFactor: Float = 0.0f
 
     abstract class Graphic protected constructor(private val overlay: GraphicOverlay) {
         protected val context: Context = overlay.context
@@ -31,17 +32,25 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
     }
 
     /**
-     * Sets the camera attributes for size and facing direction, which informs how to transform image
-     * coordinates later.
+     * Sets the dimensions for the processed image. This in turn sets the scale to display the overlay in the correct position
      */
-    fun setCameraInfo(previewView: PreviewView) {
-        if (isPortraitMode(context)) {
-            // Swap width and height when in portrait, since camera's natural orientation is landscape.
-            previewWidth = previewView.height
-            previewHeight = previewView.width
-        } else {
-            previewWidth = previewView.width
-            previewHeight = previewView.height
+    fun setImageDimens(imageWidth: Int, imageHeight: Int){
+        _imageWidth = imageWidth
+        _imageHeight = imageHeight
+
+        setScale()
+    }
+
+    /**
+     * Calculates the image scale and sets the height and width scale for the overlay
+     */
+    private fun setScale(){
+        if(isPortraitMode()){
+            heightScaleFactor = height.toFloat() / _imageWidth.toFloat()
+            widthScaleFactor = width.toFloat() / _imageHeight.toFloat()
+        }else{
+            heightScaleFactor = height.toFloat() / _imageHeight.toFloat()
+            widthScaleFactor = width.toFloat() / _imageWidth.toFloat()
         }
     }
 
@@ -78,15 +87,10 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (previewWidth > 0 && previewHeight > 0) {
-            widthScaleFactor = width.toFloat() / previewWidth
-            heightScaleFactor = height.toFloat() / previewHeight
-        }
-
         synchronized(lock) {
             graphics.forEach { it.draw(canvas) }
         }
     }
 
-    fun isPortraitMode(context: Context): Boolean = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    fun isPortraitMode(): Boolean = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 }

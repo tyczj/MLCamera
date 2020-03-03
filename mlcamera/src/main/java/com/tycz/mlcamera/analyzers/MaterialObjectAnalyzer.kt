@@ -2,6 +2,10 @@ package com.tycz.mlcamera.analyzers
 
 import android.annotation.SuppressLint
 import android.graphics.PointF
+import android.graphics.Rect
+import android.graphics.RectF
+import android.util.Log
+import android.util.Size
 import android.util.SparseArray
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -15,6 +19,7 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetector
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 import com.tycz.mlcamera.CameraReticleAnimator
 import com.tycz.mlcamera.GraphicOverlay
+import com.tycz.mlcamera.MLImageAnalyzer
 import com.tycz.mlcamera.R
 import com.tycz.mlcamera.`object`.*
 import com.tycz.mlcamera.`object`.ObjectConfirmationController
@@ -23,13 +28,25 @@ import com.tycz.mlcamera.`object`.graphics.ObjectGraphicInMultiMode
 import com.tycz.mlcamera.`object`.graphics.ObjectConfirmationGraphic
 import com.tycz.mlcamera.`object`.graphics.ObjectDotGraphic
 import com.tycz.mlcamera.`object`.graphics.ObjectReticleGraphic
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.hypot
 
-class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): ImageAnalysis.Analyzer {
+/**
+ * Detector class for detecting multiple objects from the camera
+ * Displays a dot on detected objects with material design styling
+ * @see <a href="https://material.io/collections/machine-learning/object-detection-live-camera.html">link</a>
+ *
+ * @param graphicOverlay The overlay that displays where objects were detected
+ * @param trackMultipleObjects Flag for if the detector should detect multiple objects (up to 5) or just the most prominent object
+ */
+class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private val trackMultipleObjects: Boolean): MLImageAnalyzer() {
 
-    private val TAG:String = "MaterialObjectAnalyzer"
+    companion object{
+        private const val TAG:String = "MaterialObjectAnalyzer"
+    }
 
     private val _cameraReticleAnimator: CameraReticleAnimator = CameraReticleAnimator(graphicOverlay)
     private val _confirmationController: ObjectConfirmationController = ObjectConfirmationController(graphicOverlay)
@@ -37,6 +54,9 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
     private val _objectSelectionDistanceThreshold: Int = graphicOverlay.resources.getDimensionPixelOffset(R.dimen.object_selection_distance_threshold)
     private val _objectDotAnimatorArray = SparseArray<ObjectDotAnimator>()
 
+    /**
+     * Callbacks for the object detector states
+     */
     var objectDetectionListener: ObjectDetectionListener? = null
 
     private lateinit var _detector: FirebaseVisionObjectDetector
@@ -45,11 +65,20 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
         setupObjectScanning()
     }
 
+    /**
+     * Sets up the Firebase object detector
+     */
     private fun setupObjectScanning(){
-        val options = FirebaseVisionObjectDetectorOptions.Builder()
+
+        val builder = FirebaseVisionObjectDetectorOptions.Builder()
             .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
             .enableClassification()
-            .build()
+
+        if(trackMultipleObjects){
+            builder.enableMultipleObjects()
+        }
+
+        val options = builder.build()
 
         _detector = FirebaseVision.getInstance().getOnDeviceObjectDetector(options)
     }
@@ -65,6 +94,7 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
         else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
     }
 
+    // When the BackpressureStrategy is set to STRATEGY_KEEP_ONLY_LATEST analyze only gets called again after we close the image
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
 
@@ -78,9 +108,15 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
 
         mediaImage?.let {
             val firebaseImage = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
-
+            graphicOverlay.setImageDimens(image.width, image.height)
             _detector.processImage(firebaseImage).addOnSuccessListener {
                 _isRunning.set(true)
+
+                Log.d(TAG, "${it.size} Items Found")
+
+                if(it.isNotEmpty()){
+                    objectDetectionListener?.multipleObjectsDetected(it.toList())
+                }
 
                 removeAnimatorsFromUntrackedObjects(it)
 
@@ -92,8 +128,10 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
 
                     val detectedObject = it[i]
 
+                    val detObject = DetectedObject(detectedObject, i, firebaseImage, image.width, image.height)
+
                     if(selectedObject == null && shouldSelectObject(graphicOverlay, detectedObject)){
-                        selectedObject = DetectedObject(detectedObject, i, firebaseImage)
+                        selectedObject = detObject
                         objectDetectionListener?.objectProcessing()
                         _confirmationController.confirming(detectedObject.trackingId)
                         graphicOverlay.add(ObjectConfirmationGraphic(graphicOverlay,_confirmationController, true))
@@ -111,7 +149,7 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
                                 _objectDotAnimatorArray[trackingId] = this
                             }
                         }
-                        graphicOverlay.add(ObjectDotGraphic(graphicOverlay,DetectedObject(detectedObject, i, firebaseImage),objectDotAnimator))
+                        graphicOverlay.add(ObjectDotGraphic(graphicOverlay,detObject,objectDotAnimator))
                     }
                 }
 
@@ -126,6 +164,8 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
 
                 graphicOverlay.invalidate()
 
+            }.addOnFailureListener {
+                Log.e(TAG,"Unable to detect objects")
             }.addOnCompleteListener {
                 image.close()
                 _isRunning.set(false)
@@ -133,8 +173,10 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
         }
     }
 
+    /**
+     * Checks to see if the camera reticle is on an object dot. If on the dot the object is considered selected
+     */
     private fun shouldSelectObject(graphicOverlay: GraphicOverlay, visionObject: FirebaseVisionObject): Boolean {
-        // Considers an object as selected when the camera reticle touches the object dot.
         val box = graphicOverlay.translateRect(visionObject.boundingBox)
         val objectCenter = PointF((box.left + box.right) / 2f, (box.top + box.bottom) / 2f)
         val reticleCenter = PointF(graphicOverlay.width / 2f, graphicOverlay.height / 2f)
@@ -143,9 +185,11 @@ class MaterialMultiObjectAnalyzer(private val graphicOverlay: GraphicOverlay): I
         return distance < _objectSelectionDistanceThreshold
     }
 
+    /**
+     * Removes dots that have no longer been tracked, ie. moving out of frame
+     */
     private fun removeAnimatorsFromUntrackedObjects(detectedObjects: List<FirebaseVisionObject>) {
         val trackingIds = detectedObjects.mapNotNull { it.trackingId }
-        // Stop and remove animators from the objects that have lost tracking.
         val removedTrackingIds = ArrayList<Int>()
 
         _objectDotAnimatorArray.forEach { key, value ->
