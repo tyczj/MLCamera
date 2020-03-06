@@ -12,6 +12,8 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObject
 import com.tycz.mlcamera.MLCamera
 import com.tycz.mlcamera.`object`.DetectedObject
 import com.tycz.mlcamera.`object`.ObjectDetectionListener
+import com.tycz.mlcamera.analyzers.BasicBarcodeAnalyzer
+import com.tycz.mlcamera.analyzers.BasicObjectAnalyzer
 import com.tycz.mlcamera.analyzers.MaterialObjectAnalyzer
 import com.tycz.mlcamera.barcode.BarcodeListener
 import kotlinx.android.synthetic.main.activity_main.*
@@ -25,13 +27,19 @@ class MainActivity : AppCompatActivity(), BarcodeListener, ObjectDetectionListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //        val analyzer = MaterialBarcodeAnalyzer(overlay).apply {
+//        val analyzer = MaterialBarcodeAnalyzer(overlay).apply {
 //            barcodeResultListener = this@MainActivity
 //        }
 
-        val analyzer = MaterialObjectAnalyzer(overlay,true).apply {
-            objectDetectionListener = this@MainActivity
-        }
+//        val analyzer = MaterialObjectAnalyzer(overlay,true).apply {
+//            objectDetectionListener = this@MainActivity
+//        }
+
+//        val analyzer = BasicObjectAnalyzer(overlay,true).apply {
+//            objectDetectionListener = this@MainActivity
+//        }
+
+        val analyzer = BasicBarcodeAnalyzer(overlay)
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
             _mlCamera = MLCamera.Builder(this)

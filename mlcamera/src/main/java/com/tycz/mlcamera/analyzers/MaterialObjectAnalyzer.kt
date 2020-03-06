@@ -2,8 +2,6 @@ package com.tycz.mlcamera.analyzers
 
 import android.annotation.SuppressLint
 import android.graphics.PointF
-import android.graphics.Rect
-import android.graphics.RectF
 import android.util.Log
 import android.util.Size
 import android.util.SparseArray
@@ -19,7 +17,6 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetector
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 import com.tycz.mlcamera.CameraReticleAnimator
 import com.tycz.mlcamera.GraphicOverlay
-import com.tycz.mlcamera.MLImageAnalyzer
 import com.tycz.mlcamera.R
 import com.tycz.mlcamera.`object`.*
 import com.tycz.mlcamera.`object`.ObjectConfirmationController
@@ -28,8 +25,6 @@ import com.tycz.mlcamera.`object`.graphics.ObjectGraphicInMultiMode
 import com.tycz.mlcamera.`object`.graphics.ObjectConfirmationGraphic
 import com.tycz.mlcamera.`object`.graphics.ObjectDotGraphic
 import com.tycz.mlcamera.`object`.graphics.ObjectReticleGraphic
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.hypot
@@ -44,7 +39,7 @@ import kotlin.math.hypot
  */
 class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private val trackMultipleObjects: Boolean): ImageAnalysis.Analyzer {
 
-    companion object{
+    private companion object{
         private const val TAG:String = "MaterialObjectAnalyzer"
     }
 
@@ -59,17 +54,9 @@ class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private
      */
     var objectDetectionListener: ObjectDetectionListener? = null
 
-    private lateinit var _detector: FirebaseVisionObjectDetector
+    private val _detector: FirebaseVisionObjectDetector
 
     init {
-        setupObjectScanning()
-    }
-
-    /**
-     * Sets up the Firebase object detector
-     */
-    private fun setupObjectScanning(){
-
         val builder = FirebaseVisionObjectDetectorOptions.Builder()
             .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
             .enableClassification()
@@ -128,7 +115,7 @@ class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private
 
                     val detectedObject = it[i]
 
-                    val detObject = DetectedObject(detectedObject, i, firebaseImage, image.width, image.height)
+                    val detObject = DetectedObject(detectedObject, i, firebaseImage, Size(image.width,image.height))
 
                     if(selectedObject == null && shouldSelectObject(graphicOverlay, detectedObject)){
                         selectedObject = detObject

@@ -65,7 +65,13 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
         translateY(rect.bottom.toFloat())
     )
 
+    /**
+     * Translates the given x value to the correct scale of the overlay size
+     */
     fun translateX(x: Float): Float = x * widthScaleFactor
+    /**
+     * Translates the given y value to the correct scale of the overlay size
+     */
     fun translateY(y: Float): Float = y * heightScaleFactor
 
     /** Removes all graphics from the overlay.  */

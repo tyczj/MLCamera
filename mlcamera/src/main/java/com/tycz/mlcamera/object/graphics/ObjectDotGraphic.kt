@@ -7,9 +7,10 @@ import com.tycz.mlcamera.GraphicOverlay
 import com.tycz.mlcamera.R
 import com.tycz.mlcamera.`object`.DetectedObject
 import com.tycz.mlcamera.`object`.ObjectDotAnimator
+import com.tycz.mlcamera.basic.BasicDetectedObject
 
 /** A dot to indicate a detected object used by multiple objects detection mode.  */
-internal class ObjectDotGraphic(private val overlay: GraphicOverlay, private val detectedObject: DetectedObject, private val animator: ObjectDotAnimator)
+internal class ObjectDotGraphic(private val overlay: GraphicOverlay, private val detectedObject: BasicDetectedObject, private val animator: ObjectDotAnimator)
     :GraphicOverlay.Graphic(overlay) {
 
     private val _paint: Paint

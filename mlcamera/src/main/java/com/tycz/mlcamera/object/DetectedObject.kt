@@ -1,26 +1,25 @@
 package com.tycz.mlcamera.`object`
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Rect
 import android.util.Log
+import android.util.Size
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.objects.FirebaseVisionObject
+import com.tycz.mlcamera.basic.BasicDetectedObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 /**
  * Holds the detected object and its related image info.
  */
-class DetectedObject(private val visionObject: FirebaseVisionObject, val objectIndex: Int, private val image: FirebaseVisionImage, private val width:Int, private val height:Int) {
+class DetectedObject(private val visionObject: FirebaseVisionObject, val objectIndex: Int, private val image: FirebaseVisionImage, imageDimens: Size):BasicDetectedObject(imageDimens.width, imageDimens.height, visionObject.boundingBox, Color.TRANSPARENT) {
 
     private var bitmap: Bitmap? = null
     private var jpegBytes: ByteArray? = null
 
     val objectId: Int? = visionObject.trackingId
-    val boundingBox: Rect = visionObject.boundingBox
-
-    val imageWidth:Int = width
-    val imageHeight:Int = height
 
     val imageData: ByteArray?
         @Synchronized get() {

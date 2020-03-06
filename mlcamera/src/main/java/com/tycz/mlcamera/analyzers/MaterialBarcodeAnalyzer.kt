@@ -28,9 +28,8 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
 
     private val TAG:String = "MaterialBarcodeAnalyzer"
 
-    private val _cameraReticleAnimator: CameraReticleAnimator =
-        CameraReticleAnimator(graphicOverlay)
-    private lateinit var _detector: FirebaseVisionBarcodeDetector
+    private val _cameraReticleAnimator: CameraReticleAnimator = CameraReticleAnimator(graphicOverlay)
+    private val _detector: FirebaseVisionBarcodeDetector
     private val _isRunning:AtomicBoolean = AtomicBoolean(false)
     private lateinit var _barcodeReticile: BarcodeReticleGraphic
 
@@ -46,13 +45,6 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
     var shouldShowLoadingAnimation: Boolean = true
 
     init {
-        setupBarcodeScanning()
-    }
-
-    /**
-     * Sets up the Firebase barcode detector
-     */
-    private fun setupBarcodeScanning(){
         val options = FirebaseVisionBarcodeDetectorOptions.Builder()
             .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
             .build()
