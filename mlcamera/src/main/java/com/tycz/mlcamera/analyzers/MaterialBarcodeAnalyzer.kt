@@ -88,6 +88,7 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
                     _barcodeReticile = BarcodeReticleGraphic(graphicOverlay, _cameraReticleAnimator)
                     graphicOverlay.add(_barcodeReticile)
                 }else{
+                    barcodeResultListener?.onBarcodesDetected(barcodes)
                     _isRunning.set(true)
                     _cameraReticleAnimator.cancel()
 

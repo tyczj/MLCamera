@@ -14,4 +14,9 @@ interface BarcodeListener {
      * Callback for when a barcode is found and called before any additional processing of the barcode happens
      */
     fun onBarcodeProcessing()
+
+    /**
+     * Callback which gives a list of all detected barcodes the detector found in the image
+     */
+    fun onBarcodesDetected(barcodes:List<FirebaseVisionBarcode>)
 }

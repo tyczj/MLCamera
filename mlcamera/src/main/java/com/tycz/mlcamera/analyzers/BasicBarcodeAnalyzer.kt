@@ -18,7 +18,7 @@ import com.tycz.mlcamera.basic.BasicDetectedObject
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Basic detector class for detecting barcodes from the camera
+ * Basic detector class for detecting barcodes from the camera.
  * Displays the detected barcodes bounding box on the overlay
  *
  * @param graphicOverlay The overlay that displays where objects were detected
@@ -70,6 +70,8 @@ class BasicBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay): ImageAna
             _detector.detectInImage(firebaseImage).addOnSuccessListener { barcodes ->
                 _isRunning.set(true)
                 graphicOverlay.clear()
+
+                barcodeResultListener?.onBarcodesDetected(barcodes)
 
                 for (i in barcodes.indices){
                     barcodes[i].boundingBox?.let {

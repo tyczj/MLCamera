@@ -67,6 +67,10 @@ class MainActivity : AppCompatActivity(), BarcodeListener, ObjectDetectionListen
         _mlCamera.stopPreview()
     }
 
+    override fun onBarcodesDetected(barcodes: List<FirebaseVisionBarcode>) {
+//        TODO("Not yet implemented")
+    }
+
     override fun objectDetected(detectedObject: DetectedObject) {
         Log.d("MainActivity","Detected")
     }
