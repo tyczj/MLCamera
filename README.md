@@ -6,6 +6,9 @@ A wrapper library for the new CameraX API and Firebase MLKit with built in Mater
 
 ### Basic Usage
 
+Setup your app with your firebase project by importing your google-services.json file. 
+See [https://firebase.google.com/docs/android/setup](https://firebase.google.com/docs/android/setup) for how to do that
+
 Getting started with MLCamera is very simple, First add these dependencies to your app's `build.gradle`
 
 ```
