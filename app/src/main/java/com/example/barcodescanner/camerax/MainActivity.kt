@@ -7,6 +7,8 @@ import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.objects.FirebaseVisionObject
 import com.tycz.mlcamera.MLCamera
@@ -27,25 +29,23 @@ class MainActivity : AppCompatActivity(), BarcodeListener, ObjectDetectionListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val analyzer = MaterialBarcodeAnalyzer(overlay).apply {
-//            barcodeResultListener = this@MainActivity
-//        }
+        val firebaseOptions = FirebaseOptions.Builder()
+            .setApiKey("")
+            .setApplicationId("1:123456789012:android:1234567890123456")
+            .setProjectId("")
+            .build()
 
-//        val analyzer = MaterialObjectAnalyzer(overlay,true).apply {
-//            objectDetectionListener = this@MainActivity
-//        }
+        FirebaseApp.initializeApp(this, firebaseOptions, "myApp")
+        val firebaseApp = FirebaseApp.getInstance("myApp")
 
-//        val analyzer = BasicObjectAnalyzer(overlay,true).apply {
-//            objectDetectionListener = this@MainActivity
-//        }
-
-        val analyzer = BasicBarcodeAnalyzer(overlay)
+        val analyzer = MaterialObjectAnalyzer(overlay,true, firebaseApp).apply {
+            objectDetectionListener = this@MainActivity
+        }
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
             _mlCamera = MLCamera.Builder(this)
                 .setLifecycleOwner(this)
                 .setImageAnalyzer(analyzer)
-//                .setImageDimensions(1280,720)
                 .build()
 
             _mlCamera.addFutureListener(Runnable {
