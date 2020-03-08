@@ -9,6 +9,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.core.util.forEach
 import androidx.core.util.set
+import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
@@ -36,8 +37,9 @@ import kotlin.math.hypot
  *
  * @param graphicOverlay The overlay that displays where objects were detected
  * @param trackMultipleObjects Flag for if the detector should detect multiple objects (up to 5) or just the most prominent object
+ * @param firebaseApp Your firebase app configuration
  */
-class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private val trackMultipleObjects: Boolean): ImageAnalysis.Analyzer {
+class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private val trackMultipleObjects: Boolean, firebaseApp: FirebaseApp): ImageAnalysis.Analyzer {
 
     private companion object{
         private const val TAG:String = "MaterialObjectAnalyzer"
@@ -67,7 +69,7 @@ class MaterialObjectAnalyzer(private val graphicOverlay: GraphicOverlay, private
 
         val options = builder.build()
 
-        _detector = FirebaseVision.getInstance().getOnDeviceObjectDetector(options)
+        _detector = FirebaseVision.getInstance(firebaseApp).getOnDeviceObjectDetector(options)
     }
 
     /**

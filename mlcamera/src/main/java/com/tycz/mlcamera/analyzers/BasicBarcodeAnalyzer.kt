@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
@@ -22,8 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  * Displays the detected barcodes bounding box on the overlay
  *
  * @param graphicOverlay The overlay that displays where objects were detected
+ * @param firebaseApp Your firebase app configuration
  */
-class BasicBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay): ImageAnalysis.Analyzer  {
+class BasicBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay, firebaseApp: FirebaseApp): ImageAnalysis.Analyzer  {
 
     private val TAG = "BsicBarcodeAnayzer"
 
@@ -40,7 +42,7 @@ class BasicBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay): ImageAna
             .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
             .build()
 
-        _detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+        _detector = FirebaseVision.getInstance(firebaseApp).getVisionBarcodeDetector(options)
     }
 
     /**

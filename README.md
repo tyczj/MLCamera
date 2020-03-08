@@ -8,8 +8,23 @@ A wrapper library for the new CameraX API and Firebase MLKit with built in Mater
 
 ### Basic Usage
 
-Setup your app with your firebase project by importing your google-services.json file. 
+Setup your app with your firebase project. 
+***DO NOT ADD THE `google-services.json` FILE TO YOUR APP***
 See [https://firebase.google.com/docs/android/setup](https://firebase.google.com/docs/android/setup) for how to do that
+
+Setup Firebase in your app manually
+See [https://firebase.google.com/docs/projects/multiprojects#use_multiple_projects_in_your_application](https://firebase.google.com/docs/projects/multiprojects#use_multiple_projects_in_your_application) for additional details
+
+```
+val firebaseOptions = FirebaseOptions.Builder()
+    .setApiKey("apiKey") // Found in your google-services.json file
+    .setApplicationId("applicationId") // Found in your google-services.json file called mobilesdk_app_id
+    .setProjectId("projectId") // Found in your google-services.json file
+    .build()
+
+FirebaseApp.initializeApp(this, firebaseOptions, "myApp")
+val firebaseApp = FirebaseApp.getInstance("myApp")
+```
 
 Getting started with MLCamera is very simple, First add these dependencies to your app's `build.gradle`
 
@@ -95,7 +110,7 @@ The barcode scanner scans the first barcode it finds in the scan area and return
 ### Setup
 
 ```
-val analyzer = MaterialBarcodeAnalyzer(overlay).apply {
+val analyzer = MaterialBarcodeAnalyzer(overlay,firebaseApp).apply {
     barcodeResultListener = this@MainActivity // Optional if you want callbacks from the image analyzer at different steps along the way with information
 }
 ```
@@ -121,7 +136,7 @@ The analyzer displays up to 5 objects on the screen by default with a white dot 
 ### Setup
 
 ```
-val analyzer = MaterialObjectAnalyzer(overlay,true).apply {
+val analyzer = MaterialObjectAnalyzer(overlay,true,firebaseApp).apply {
     objectDetectionListener = this@MainActivity
 }
 ```
@@ -133,7 +148,7 @@ This anlyzer detects all barcodes visible on the screen and draws a box around t
 ### Setup
 
 ```
-val analyzer = BasicBarcodeAnalyzer(overlay)
+val analyzer = BasicBarcodeAnalyzer(overlay, firebaseApp)
 ```
 
 You can subscribe to one of the callbacks in the `BarcodeListener` interface 
@@ -151,7 +166,7 @@ This analyzer is similar to the Material Object Analyzer in that it can detect e
 ### Setup
 
 ```
-val analyzer = BasicObjectAnalyzer(overlay,true)
+val analyzer = BasicObjectAnalyzer(overlay,true,firebaseApp)
 ```
 
 You can subscribe to one of the callbacks in the `ObjectDetectionListener` interface

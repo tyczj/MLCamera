@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
@@ -21,8 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * @param graphicOverlay The overlay that displays where objects were detected
  * @param trackMultipleObjects Flag for if the detector should detect multiple objects (up to 5) or just the most prominent object
+ * @param firebaseApp Your firebase app configuration
  */
-class BasicObjectAnalyzer(private val graphicOverlay: GraphicOverlay, trackMultipleObjects: Boolean): ImageAnalysis.Analyzer {
+class BasicObjectAnalyzer(private val graphicOverlay: GraphicOverlay, trackMultipleObjects: Boolean, firebaseApp: FirebaseApp): ImageAnalysis.Analyzer {
 
     private val _isRunning: AtomicBoolean = AtomicBoolean(false)
     private val _detector: FirebaseVisionObjectDetector
@@ -43,7 +45,7 @@ class BasicObjectAnalyzer(private val graphicOverlay: GraphicOverlay, trackMulti
 
         val options = builder.build()
 
-        _detector = FirebaseVision.getInstance().getOnDeviceObjectDetector(options)
+        _detector = FirebaseVision.getInstance(firebaseApp).getOnDeviceObjectDetector(options)
     }
 
     /**

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.google.firebase.FirebaseApp
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
@@ -23,8 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @see <a href="https://material.io/collections/machine-learning/barcode-scanning.html">link</a>
  *
  * @param graphicOverlay The overlay that displays where objects were detected
+ * @param firebaseApp Your firebase app configuration
  */
-class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageAnalysis.Analyzer {
+class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay, firebaseApp:FirebaseApp):ImageAnalysis.Analyzer {
 
     private val TAG:String = "MaterialBarcodeAnalyzer"
 
@@ -49,7 +51,7 @@ class MaterialBarcodeAnalyzer(private val graphicOverlay: GraphicOverlay):ImageA
             .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
             .build()
 
-        _detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+        _detector = FirebaseVision.getInstance(firebaseApp).getVisionBarcodeDetector(options)
     }
 
     /**
