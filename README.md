@@ -9,10 +9,13 @@ A wrapper library for the new CameraX API and Firebase MLKit with built in Mater
 ### Basic Usage
 
 Setup your app with your firebase project. 
+
 ***DO NOT ADD THE `google-services.json` FILE TO YOUR APP***
+
 See [https://firebase.google.com/docs/android/setup](https://firebase.google.com/docs/android/setup) for how to do that
 
 Setup Firebase in your app manually
+
 See [https://firebase.google.com/docs/projects/multiprojects#use_multiple_projects_in_your_application](https://firebase.google.com/docs/projects/multiprojects#use_multiple_projects_in_your_application) for additional details
 
 ```
