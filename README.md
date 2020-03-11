@@ -5,6 +5,7 @@
 ***Library is currently in alpha and the API might change***
 
 [![Build Status](https://travis-ci.org/tyczj/MLCamera.svg)](https://travis-ci.org/tyczj/MLCamera)
+[![Download](https://api.bintray.com/packages/tyczj359/MLCamera/MLCamera/images/download.svg) ](https://bintray.com/tyczj359/MLCamera/MLCamera/_latestVersion)
 
 A wrapper library for the new CameraX API and Firebase MLKit with built in Material Design barcode and object detection built fully in Kotlin.
 
