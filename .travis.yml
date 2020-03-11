@@ -11,6 +11,8 @@ android:
     - extra-google-google_play_services
 script:
   - ./gradlew clean build -x test
+  - ./gradlew clean :Production:publish
+  - ./gradlew clean :Production:bintrayUpload
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
