@@ -4,9 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
+afterEvaluate {
     publishing {
         publications {
             Production(MavenPublication) {
+                from components.release
+
                 artifact("$buildDir/outputs/aar/mlcamera-release.aar")
                 groupId 'com.tycz'
                 artifactId 'mlcamera'
@@ -34,7 +37,7 @@ apply plugin: 'maven-publish'
         user = System.getenv('BINTRAY_USER')
         key = System.getenv('BINTRAY_API_KEY')
         dryRun = false
-        override = false
+        override = true
         publish = true
         pkg {
             repo = 'MLCamera'
@@ -50,6 +53,7 @@ apply plugin: 'maven-publish'
         }
         publications = ['Production']
     }
+}
 
 android {
     compileSdkVersion 29
