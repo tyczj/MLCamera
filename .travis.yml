@@ -21,4 +21,4 @@ android:
     - extra-google-google_play_services
 
 script:
-  - ./gradlew :mlcamera:clean :mlcamera:build -x test
+  - ./gradlew :mlcamera:clean :mlcamera:build :mlcamera:bintrayUpload -x test
