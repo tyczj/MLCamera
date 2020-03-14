@@ -41,6 +41,7 @@ bintray {
         repo = 'MLCamera'
         name = project.name
         userOrg = 'tyczj359'
+        licenses = ['Apache-2.0']
         desc = 'A wrapper library for the new CameraX API and Firebase MLKit to create easier setup for MLKit usage'
         vcsUrl = 'https://github.com/tyczj/MLCamera.git'
 
